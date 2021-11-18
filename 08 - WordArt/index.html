@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+<body>
+<canvas id="draw" width="800" height="800"></canvas>
+<script>
+  const canvas = document.querySelector('#draw');
+  // you dont draw on element/canvas but on block of pixels using getContext method
+  // And we set getContext to 2d could be 3d
+  // so ctx is where we do the drawing
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  // line color will be badass
+  ctx.strokeStyle = '#BADA55';
+  // when drawing the start and enpoint will it be round or sqaure etc.
+  // Try with nothing and see the styling// Think of it as Pen nib style
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.lineWidth = 50;
+
+  let isDrawing = false;
+  let lastX = 0;
+  let lastY = 0;
+  let hue = 0;
+  let direction = true;
+
+  function draw(mouseEvent){
+    if(!isDrawing) return; //stop function from registering if mouse is down
+    console.log(mouseEvent); // mouseEvent is info on the mouse movements
+    // hue, saturation then lightness = red color
+    ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+    // the width of line start at 0 and max be 360 in thickness
+    ctx.lineWidth = hue;
+    ctx.beginPath();
+    // start from 0,0
+    ctx.moveTo(lastX, lastY);
+    // go to new coordinates
+    ctx.lineTo(mouseEvent.offsetX, mouseEvent.offsetY);
+    ctx.stroke();
+    // leave paint on those new coordinates
+    // lastX = mouseEvent.offsetX;
+    // lastY = mouseEvent.offsetY;
+    // this could refacted as
+    [lastX, lastY] = [mouseEvent.offsetX, mouseEvent.offsetY];
+    // increment hue from 0/red ++ to change colour
+    hue++;
+    // color resets after we achive max color.
+    if(hue >= 360) {
+      hue = 0;
+    }
+    if (ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
+      // direction is false if either of those condtions is true
+      direction = !direction;
+    }
+    if(direction) {
+      ctx.lineWidth++;
+      // direction = width which will increase thickness of line
+    } else {
+      // direction = decrease thickenss untill 1
+      ctx.lineWidth--;
+    }
+
+  }
+
+  // Before mousemove is triggered we will update where our points and paint is
+  // This means the offset will be reset to zero allowing us to draw seperate lines
+  // non-continous lines
+  canvas.addEventListener('mousedown', (mouseEvent) => {
+    isDrawing = true;
+    [lastX, lastY] = [mouseEvent.offsetX, mouseEvent.offsetY];
+  });
+
+  canvas.addEventListener('mousemove', draw);
+  // mouse is clicked
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  // mouse out of window
+  canvas.addEventListener('mouseout', () => isDrawing = false);
+</script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+</style>
+
+</body>
+</html>

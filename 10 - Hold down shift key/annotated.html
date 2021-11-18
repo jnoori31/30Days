@@ -1,0 +1,45 @@
+<script>
+  const checkboxes = document.querySelectorAll('.inbox input[type="checkbox"]')
+  // console.log(checkBox);
+  let lastChecked;
+
+  function handleCheck(e) {
+    // check if we have a shift key pressed down
+    // And check that they are checking it at the same time
+
+    let inBetween = false;
+    // this = current checkbox .checked is a property of the object input
+    // console in terminal (checkboxes and expand on each input)
+    if (e.shiftKey && this.checked) {
+      // both conditions are met then continue
+      // loop over every single checkbox // observe checkboxes inbetween the first and last shift
+      checkboxes.forEach(checkbox => {
+         console.log(checkbox);
+         // this = you click then press shift, lastChecked = or click and you shift on the last checkbox
+        if (checkbox === this || checkbox === lastChecked) {
+          // inBetween is opposite what the checkbox state is
+          inBetween = !inBetween;
+          console.log("Start to see which box is inbetween");
+        }
+        // if inbetween = true then the checkbox, checked property will true and the css will toggle
+        if(inBetween) {
+          checkbox.checked = true;
+        }
+      });
+    }
+    lastChecked = this;
+    // function ends at the last box which has has the shiftdown on it.
+  }
+  // Loop over every checkbox and once a click has been made
+  // fire of the function handelCheck
+  checkboxes.forEach(checkbox => checkbox.addEventListener('click', handleCheck))
+</script>
+
+1. grab checkboes
+2. set variable
+3. create function
+4. new variable
+5. condtion is met
+6. loop
+7. condtion in loop
+8. property set and css is toggled

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Type Ahead 👀</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="City or State">
+    <ul class="suggestions">
+      <li>Filter for a city</li>
+      <li>or a state</li>
+    </ul>
+  </form>
+  <script>
+    const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+
+    const cities = [];
+  //callback way
+  // fetch(endpoint, function(data){
+    // console.log(data);
+  // })
+
+  fetch(endpoint)
+  // blob => blob in console will tell you what method you can convert object too- in this case json
+  .then(blob => blob.json())
+  // will finally parse into json. So step 1 grab file- then parse into json- then dispaly.
+  // .then(data => console.log(data))
+  // .then(data => cities.push(data))
+  //This mean we can push more elements into the single array- rather than push and create an array of arrays
+  .then(data => cities.push(...data))
+
+
+  function findMatches(wordToMatch, cities) {
+    //function will take two arguments and return a city or place that matches input
+    return cities.filter(place => {
+      //see if city/state matches user input
+      // return place.city.match(/boss/i) would work if we only searched boss as a predefined input
+      //wordToMatch is dyunbamic and it will literally search json file for wordToMatch
+      const regex = new RegExp(wordToMatch, 'gi');
+      // regex allows us to use the normal regex syntaxt like above but insert a dynamic variable for different user input
+      // g is global and i is insensitive not case sensitive
+      return place.city.match(regex) || place.state.match(regex)
+      // console findMatches('lon', cities)
+    });
+  }
+
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function displayMatches(){
+    //console.log(this.value); check searchInput
+    // this.value = wordToMatch
+    const matchArray = findMatches(this.value, cities);
+    // console.log(matchArray);
+
+    const html = matchArray.map(place => {
+      // Below is optional for styling highlighting what you wrote and comma to seperate the numbers.
+      // const regex = new RegExp(this.value, 'gi');
+      // const cityName = place.city.replace(regex, `<span class="hl">
+      //   ${this.value}</span>`);
+      // <span class="name">${place.city}, ${place.state}</span>
+      // <span class="population">${numberWithCommas(place.population)}</span>
+      return `
+      <li>
+      <span class="name">${place.city}, ${place.state}</span>
+      <span class="population">${place.population}</span>
+      </li>
+      `;
+     }).join(''); //map will now one big string
+    suggestions.innerHTML = html;
+    // Interpolate the city, state and population into the DOM- suggestions is display on webpage
+  }
+
+  const searchInput = document.querySelector('.search');
+  //suggestions is the display once you type in the search bar
+  const suggestions = document.querySelector('.suggestions');
+// change == click anywhere
+// keyup == as you type in search bar- each relese of key is a search
+searchInput.addEventListener('change', displayMatches);
+  // searchInput.addEventListener('keyup', displayMatches);
+
+
+
+// 1. fetch the data and parse into json which is pushed into an array
+// 2. findMathces function uses a dynamic regex variable to return user input that matches with databse
+// 3. function numwitcommas copied from stackoverlfow does what is says on the tin
+// 4. funciton displayMatches:
+// 1st get your querySelector and addEventListener sorted
+// 2d create new variable matchArray which is the findMatches function
+// 3rd html which iterates on each search that matches with databse
+// 4th interpolate the reuslt into the lis
+// 5th will makes sure its a string not an array using .json
+// 6th change the innerHTML of the suggestions section of the webpage
+
+</script>
+</body>
+</html>
